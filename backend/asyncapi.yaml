@@ -1,0 +1,198 @@
+asyncapi: 2.0.0
+info:
+  title: TaskFlow Realtime API
+  version: 1.0.0
+  description: >
+    This AsyncAPI specification defines the realtime websocket events for
+    TaskFlow,
+
+    the task management application. It covers events such as task creation,
+    updates,
+
+    comments, notifications, deletion, and assignee modifications.
+servers:
+  development:
+    url: ws://localhost:3000
+    protocol: ws
+    description: WebSocket server for realtime events
+channels:
+  task_created:
+    description: Channel for receiving new task creation events.
+    subscribe:
+      operationId: on_task_created
+      summary: Subscribe to new task creation events.
+      message:
+        $ref: "#/components/messages/task_created"
+  task_updated:
+    description: Channel for receiving task update events.
+    subscribe:
+      operationId: on_task_updated
+      summary: Subscribe to task update events.
+      message:
+        $ref: "#/components/messages/task_updated"
+  new_comment:
+    description: Channel for receiving new comment events on tasks.
+    subscribe:
+      operationId: on_new_comment
+      summary: Subscribe to new comment events.
+      message:
+        $ref: "#/components/messages/new_comment"
+  notification_created:
+    description: Channel for receiving new notification events.
+    subscribe:
+      operationId: on_notification_created
+      summary: Subscribe to new notification events.
+      message:
+        $ref: "#/components/messages/notification_created"
+  task_deleted:
+    description: Channel for receiving task deletion events.
+    subscribe:
+      operationId: on_task_deleted
+      summary: Subscribe to task deletion events.
+      message:
+        $ref: "#/components/messages/task_deleted"
+  assignee_updated:
+    description: Channel for receiving task assignee update events.
+    subscribe:
+      operationId: on_assignee_updated
+      summary: Subscribe to task assignee update events.
+      message:
+        $ref: "#/components/messages/assignee_updated"
+components:
+  messages:
+    task_created:
+      name: task_created
+      title: Task Created Message
+      summary: Event emitted when a new task is created.
+      payload:
+        $ref: "#/components/schemas/task_created_payload"
+    task_updated:
+      name: task_updated
+      title: Task Updated Message
+      summary: Event emitted when a task is updated.
+      payload:
+        $ref: "#/components/schemas/task_updated_payload"
+    new_comment:
+      name: new_comment
+      title: New Comment Message
+      summary: Event emitted when a new comment is added to a task.
+      payload:
+        $ref: "#/components/schemas/new_comment_payload"
+    notification_created:
+      name: notification_created
+      title: Notification Created Message
+      summary: Event emitted when a new notification is created.
+      payload:
+        $ref: "#/components/schemas/notification_created_payload"
+    task_deleted:
+      name: task_deleted
+      title: Task Deleted Message
+      summary: Event emitted when a task is deleted.
+      payload:
+        $ref: "#/components/schemas/task_deleted_payload"
+    assignee_updated:
+      name: assignee_updated
+      title: Assignee Updated Message
+      summary: Event emitted when a task's assignees are updated.
+      payload:
+        $ref: "#/components/schemas/assignee_updated_payload"
+  schemas:
+    task_created_payload:
+      type: object
+      properties:
+        task_id:
+          type: string
+        title:
+          type: string
+        status:
+          type: string
+        due_date:
+          type: string
+        creator_id:
+          type: string
+      required:
+        - task_id
+        - title
+        - status
+        - creator_id
+    task_updated_payload:
+      type: object
+      properties:
+        task_id:
+          type: string
+        updated_fields:
+          type: object
+          properties:
+            status:
+              type: string
+            priority:
+              type: string
+            due_date:
+              type: string
+          additionalProperties: false
+        updated_at:
+          type: string
+      required:
+        - task_id
+        - updated_fields
+        - updated_at
+    new_comment_payload:
+      type: object
+      properties:
+        comment_id:
+          type: string
+        task_id:
+          type: string
+        user_id:
+          type: string
+        comment_text:
+          type: string
+        created_at:
+          type: string
+      required:
+        - comment_id
+        - task_id
+        - user_id
+        - comment_text
+        - created_at
+    notification_created_payload:
+      type: object
+      properties:
+        notification_id:
+          type: string
+        user_id:
+          type: string
+        notification_type:
+          type: string
+        message:
+          type: string
+        is_read:
+          type: boolean
+        created_at:
+          type: string
+      required:
+        - notification_id
+        - user_id
+        - notification_type
+        - message
+        - is_read
+        - created_at
+    task_deleted_payload:
+      type: object
+      properties:
+        task_id:
+          type: string
+      required:
+        - task_id
+    assignee_updated_payload:
+      type: object
+      properties:
+        task_id:
+          type: string
+        assignees:
+          type: array
+          items:
+            type: string
+      required:
+        - task_id
+        - assignees
